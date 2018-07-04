@@ -2,6 +2,7 @@
 #include "DRA_macros.h"
 #include "DRA_send_status.h"
 #include "DRA_uart_receiver.h"
+#include "DRA_send_dva_val.h"
 
 //-------------------------------------------------
 //------------------- constants -------------------
@@ -71,7 +72,7 @@ void Copter::userhook_MediumLoop()
     int8_t retVal = recv_uart_dra_message(&dva_val);
     if (retVal !=0){ // unable to read => keep the old one
         // dva_val = -1;
-        dbg2("unable to read a message: error: %d\n",retVal);
+        // dbg2("unable to read a message: error: %d\n",retVal);
     }
     else{ // value read successfully, keep track of measurement time
         dbg2("dva value received: %d\n", dva_val);
@@ -83,6 +84,18 @@ void Copter::userhook_MediumLoop()
         dva_val = -1;
         dbg("data not valid anymore\n");
     }
+
+
+    //----------------------------
+    // analyze dva_val
+    //----------------------------
+    int8_t marked_val = 0;
+
+    
+    //----------------------------
+    // send results via mavlink
+    //----------------------------
+    send_dva_val(dva_val, marked_val);
     
 }
 #endif
